@@ -1,0 +1,251 @@
+{% extends "templates/web.html" %}
+{% block navbar %}{% endblock %}
+
+{% block head_include %}
+{{ include_style('login.bundle.css') }}
+<style>
+	:root {
+		--rbt-brand-dark: #0f2027;
+		--rbt-brand-mid: #16404d;
+		--rbt-brand-accent: #14b8a6;
+		--rbt-brand-accent-dark: #0d9488;
+	}
+	html, body { height: 100%; margin: 0; background: #ffffff; }
+	.web-footer, .navbar { display: none !important; }
+
+	.rbt-login-page {
+		display: flex;
+		min-height: 100vh;
+		width: 100%;
+	}
+
+	.rbt-brand-panel {
+		flex: 1 1 46%;
+		max-width: 560px;
+		background: linear-gradient(160deg, var(--rbt-brand-dark) 0%, var(--rbt-brand-mid) 55%, var(--rbt-brand-accent-dark) 100%);
+		color: #f8fafc;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		padding: 64px 56px;
+		position: relative;
+		overflow: hidden;
+	}
+	.rbt-brand-panel::before,
+	.rbt-brand-panel::after {
+		content: "";
+		position: absolute;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.06);
+	}
+	.rbt-brand-panel::before { width: 320px; height: 320px; top: -100px; right: -80px; }
+	.rbt-brand-panel::after { width: 220px; height: 220px; bottom: -60px; left: -60px; background: rgba(20, 184, 166, 0.18); }
+
+	.rbt-brand-logo {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 48px;
+		position: relative;
+		z-index: 1;
+	}
+	.rbt-brand-logo img { width: 40px; height: 40px; border-radius: 8px; object-fit: contain; background: rgba(255,255,255,0.08); }
+	.rbt-brand-logo span { font-size: 20px; font-weight: 600; letter-spacing: 0.02em; }
+
+	.rbt-brand-copy { position: relative; z-index: 1; max-width: 380px; }
+	.rbt-brand-copy h1 { font-size: 32px; font-weight: 700; line-height: 1.25; margin: 0 0 16px; color: #f8fafc; }
+	.rbt-brand-copy p { font-size: 15px; line-height: 1.6; color: rgba(248, 250, 252, 0.8); margin: 0; }
+
+	.rbt-form-panel {
+		flex: 1 1 54%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 40px 24px;
+		background: #ffffff;
+	}
+	.rbt-form-panel .login-content.page-card {
+		width: 100%;
+		max-width: 380px;
+		box-shadow: none;
+		border: none;
+		padding: 0;
+	}
+	.rbt-form-panel .page-card-head { padding: 0 0 32px; text-align: left; }
+	.rbt-form-panel .page-card-head .app-logo { display: none; }
+	.rbt-form-panel .page-card-head h4 { font-size: 26px; font-weight: 700; color: #0f172a; margin: 0 0 8px; }
+	.rbt-form-panel .page-card-subtitle { color: #64748b; font-size: 14px; margin: 0; }
+
+	.rbt-form-panel .form-control {
+		border-radius: 8px;
+		border: 1px solid #d8dde3;
+		padding: 10px 14px;
+		font-size: 14px;
+	}
+	.rbt-form-panel .form-control:focus {
+		border-color: var(--rbt-brand-accent);
+		box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
+	}
+	.rbt-form-panel button.btn-login,
+	.rbt-form-panel button.btn-forgot {
+		background: var(--rbt-brand-accent-dark) !important;
+		border-color: var(--rbt-brand-accent-dark) !important;
+		color: #ffffff !important;
+		border-radius: 8px;
+		font-weight: 600;
+		padding: 10px 0;
+	}
+	.rbt-form-panel button.btn-login:hover,
+	.rbt-form-panel button.btn-forgot:hover {
+		background: var(--rbt-brand-accent) !important;
+		border-color: var(--rbt-brand-accent) !important;
+	}
+	.rbt-form-panel button.btn-login:disabled,
+	.rbt-form-panel button.btn-forgot:disabled {
+		background: #94a3b8 !important;
+		border-color: #94a3b8 !important;
+	}
+	.rbt-form-panel .forgot-password-message a,
+	.rbt-form-panel .sign-up-message a { color: var(--rbt-brand-accent-dark); }
+
+	@media (max-width: 900px) {
+		.rbt-login-page { flex-direction: column; }
+		.rbt-brand-panel {
+			flex: 0 0 auto;
+			max-width: 100%;
+			min-height: 160px;
+			padding: 28px 24px;
+			justify-content: flex-start;
+		}
+		.rbt-brand-copy h1 { font-size: 22px; }
+		.rbt-brand-copy p { display: none; }
+		.rbt-form-panel { flex: 1 1 auto; padding: 32px 20px; }
+	}
+	@media (max-width: 480px) {
+		.rbt-brand-panel { min-height: 120px; padding: 20px; }
+		.rbt-brand-copy h1 { font-size: 19px; }
+		.rbt-brand-logo { margin-bottom: 0; }
+	}
+</style>
+{% endblock %}
+
+{% macro email_login_body() -%}
+<div class="page-card-body">
+	<div class="login-error-banner">
+		<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<use href="#es-line-alert-triangle"></use>
+		</svg>
+		<span></span>
+	</div>
+	<div class="form-group">
+		<label class="form-label" for="login_email">{{ _("Email") }}</label>
+		<div class="email-field">
+			<input type="text" id="login_email" class="form-control"
+				placeholder="{{ _('jane@example.com') }}" required autofocus autocomplete="username">
+			<svg class="field-icon email-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"
+				xmlns="http://www.w3.org/2000/svg">
+				<use class="es-lock" href="#es-line-email"></use>
+			</svg>
+		</div>
+		<p class="field-error"></p>
+	</div>
+	<div class="form-group">
+		<label class="form-label" for="login_password">{{ _("Password") }}</label>
+		<div class="password-field">
+			<input type="password" id="login_password" class="form-control" placeholder="•••••"
+				autocomplete="current-password" required>
+			<svg class="field-icon password-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"
+				xmlns="http://www.w3.org/2000/svg">
+				<use class="es-lock" href="#es-line-lock"></use>
+			</svg>
+			<svg toggle="#login_password" class="toggle-password" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<use href="#es-line-preview"></use>
+			</svg>
+		</div>
+		<p class="field-error"></p>
+		<p class="forgot-password-message">
+			<a href="#forgot">{{ _("Forgot password?") }}</a>
+		</p>
+	</div>
+</div>
+<div class="page-card-actions">
+	<button class="btn btn-sm btn-default btn-block btn-login" type="submit">{{ _("Continue") }}</button>
+</div>
+{%- endmacro %}
+
+{% macro logo_section(title=null, subtitle=null) %}
+<div class="page-card-head">
+	<img class="app-logo" src="{{ logo }}">
+	<div class="page-card-head-text">
+		{% if title %}
+		<h4>{{ _(title) }}</h4>
+		{% else %}
+		<h4>{{ _('Sign In') }}</h4>
+		{% endif %}
+		{% if subtitle %}
+		<p class="page-card-subtitle">{{ _(subtitle) }}</p>
+		{% endif %}
+	</div>
+</div>
+{% endmacro %}
+
+{% block page_content %}
+<div class="rbt-login-page">
+	<div class="rbt-brand-panel">
+		<div class="rbt-brand-logo">
+			<img src="{{ logo }}" alt="RBT HRMS">
+			<span>{{ _("RBT HRMS") }}</span>
+		</div>
+		<div class="rbt-brand-copy">
+			<h1>{{ _("Manage your people, effortlessly.") }}</h1>
+			<p>{{ _("One place for leave, payroll, attendance and everything HR at RBT.") }}</p>
+		</div>
+	</div>
+
+	<div class="rbt-form-panel">
+		<section class="for-login">
+			<div class="login-content page-card">
+				{{ logo_section(_('Sign In'), _('Welcome back! Please sign in to continue.')) }}
+				<form class="form-signin form-login" role="form" novalidate>
+					{{ email_login_body() }}
+				</form>
+			</div>
+		</section>
+
+		<section class="for-forgot">
+			<div class="login-content page-card">
+				{{ logo_section(_('Forgot Password?'), _("Enter your email and we'll send you a password reset link.")) }}
+				<form class="form-signin form-forgot hide" role="form" novalidate>
+					<div class="page-card-body">
+						<div class="form-group">
+							<label class="form-label" for="forgot_email">{{ _("Email") }}</label>
+							<div class="email-field">
+								<input type="email" id="forgot_email" class="form-control"
+									placeholder="{{ _('jane@example.com') }}" required autofocus autocomplete="username">
+								<svg class="field-icon email-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"
+									xmlns="http://www.w3.org/2000/svg">
+									<use class="es-lock" href="#es-line-email"></use>
+								</svg>
+							</div>
+							<p class="field-error"></p>
+						</div>
+					</div>
+					<div class="page-card-actions">
+						<button class="btn btn-sm btn-primary btn-block btn-signup btn-forgot"
+							type="submit" disabled>{{ _("Send Link") }}</button>
+					</div>
+				</form>
+				<div class="text-center sign-up-message">
+					<a href="#login">{{ _("Back to sign in") }}</a>
+				</div>
+			</div>
+		</section>
+	</div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>{% include "templates/includes/login/login.js" %}</script>
+{% endblock %}
+
+{% block sidebar %}{% endblock %}
